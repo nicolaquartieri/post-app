@@ -1,0 +1,5 @@
+include ':domain'
+include ':infrastructure'
+include ':presentation'
+include ':app'
+rootProject.name = "postapp"
