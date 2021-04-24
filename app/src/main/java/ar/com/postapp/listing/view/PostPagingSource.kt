@@ -32,6 +32,7 @@ class PostPagingSource(private val repository: PostRepository) : PagingSource<In
                     nextKey = if (data.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
+            Log.d("DEBUGG", e.toString())
             LoadResult.Error(e)
         }
     }

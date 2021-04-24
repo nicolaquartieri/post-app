@@ -12,4 +12,14 @@ dependencies {
     implementation project(":domain")
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Retrofit
+    implementation 'com.squareup.okhttp3:okhttp:3.12.8'
+    implementation "com.squareup.okhttp3:logging-interceptor:3.12.8"
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0") {
+        // Exclude okhttp 4+
+        exclude group: 'com.squareup.okhttp3', module: 'okhttp'
+    }
+    implementation "com.squareup.retrofit2:converter-jackson:2.9.0"
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin:2.10.3"
 }

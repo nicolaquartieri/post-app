@@ -12,7 +12,7 @@ import ar.com.postapp.common.RepositoryProvider
 import ar.com.postapp.listing.presenter.ListingPresenter
 import ar.com.postapp.listing.presenter.ui.UIComponents
 import ar.com.postapp.listing.view.EmptyUI
-import ar.com.postapp.listing.view.ListOfElements
+import ar.com.postapp.listing.view.ListOfElementsUI
 import kotlinx.android.synthetic.main.fragment_listing.*
 
 class ListingFragment: Fragment() {
@@ -48,7 +48,7 @@ class ListingFragment: Fragment() {
 
     private fun listUIComponents(): List<UIComponents<View>> = listOf(
         EmptyUI(requireContext()),
-        ListOfElements(requireContext(), lifecycleScope, repository)
+        ListOfElementsUI(requireContext(), lifecycleScope, repository)
     )
 
     private fun display(components: List<UIComponents<View>>) {

@@ -1,8 +1,11 @@
 package ar.com.postapp.listing.view
 
 import android.content.Context
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.LifecycleCoroutineScope
+import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.cachedIn
@@ -14,9 +17,9 @@ import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class ListOfElements(private val context: Context,
-                     private val lifecycleScope: LifecycleCoroutineScope,
-                     private val repository: PostRepository
+class ListOfElementsUI(private val context: Context,
+                       private val lifecycleScope: LifecycleCoroutineScope,
+                       private val repository: PostRepository
 ) : UIComponents<View> {
 
     @InternalCoroutinesApi
@@ -30,10 +33,28 @@ class ListOfElements(private val context: Context,
             adapter = postAdapter
         }
 
+        postAdapter.addLoadStateListener {states ->
+            if (states.refresh == LoadState.Loading) {
+                Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
+                Log.d("DEBUG", "LoadState.Loading")
+            } else {
+                val error = when {
+                    states.prepend is LoadState.Error -> states.prepend as LoadState.Error
+                    states.append is LoadState.Error -> states.append as LoadState.Error
+                    states.refresh is LoadState.Error -> states.refresh as LoadState.Error
+                    else -> null
+                }
+                error?.let {
+                    Toast.makeText(context, "Error ${it.error.message}", Toast.LENGTH_LONG).show()
+                }
+                Log.d("DEBUG", "NOT LoadState.Loading")
+            }
+        }
+
         val page = Pager(
             config = PagingConfig(
-                initialLoadSize = 30,
-                pageSize = 10
+                initialLoadSize = 5,
+                pageSize = 20
             )
         ) { PostPagingSource(repository) }
             .flow.cachedIn(lifecycleScope)
