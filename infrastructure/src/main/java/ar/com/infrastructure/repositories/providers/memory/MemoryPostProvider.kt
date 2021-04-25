@@ -4,7 +4,7 @@ import ar.com.domain.entities.Post
 import ar.com.infrastructure.repositories.providers.PostProvider
 
 class MemoryPostProvider: PostProvider {
-    private val list = mutableListOf(
+    private var list = mutableListOf(
     Post(0, 0, "Titulo 1", "Detalles 1"),
     Post(1, 1, "Titulo 2", "Detalles 2"),
     Post(2, 2, "Titulo 3", "Detalles 3"),
@@ -16,5 +16,9 @@ class MemoryPostProvider: PostProvider {
 
     override suspend fun getAllPost(rowsOfPage: Int, page: Int): List<Post> {
         return list.subList(page, rowsOfPage)
+    }
+
+    override suspend fun insertAllPost(posts: List<Post>) {
+        list.addAll(posts)
     }
 }

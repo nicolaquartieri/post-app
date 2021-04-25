@@ -20,7 +20,7 @@ class ListingFragment: Fragment() {
 
     private lateinit var presenter: ListingPresenter
 
-    private val repository = RepositoryProvider.postRepository
+    private val repository = RepositoryProvider.repository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

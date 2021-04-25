@@ -36,4 +36,8 @@ class RemotePostProvider: PostProvider {
     override suspend fun getAllPost(rowsOfPage: Int, page: Int): List<Post> {
         return postService.getAllPost()
     }
+
+    override suspend fun insertAllPost(posts: List<Post>) {
+        // TODO
+    }
 }

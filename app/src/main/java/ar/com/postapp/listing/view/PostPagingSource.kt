@@ -21,7 +21,7 @@ class PostPagingSource(private val repository: PostRepository) : PagingSource<In
             var data = emptyList<Post>()
 
             withContext(Dispatchers.IO) {
-                data = repository.getPost(params.loadSize, page * params.loadSize)
+                data = repository.getAllPost(params.loadSize, page * params.loadSize)
             }
 
             Log.d("DEBUG", "Page: $page - ParamSize: ${params.loadSize} - dataSize: ${data.size}")

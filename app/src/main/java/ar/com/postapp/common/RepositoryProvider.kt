@@ -1,13 +1,19 @@
 package ar.com.postapp.common
 
 import ar.com.infrastructure.repositories.PostRepository
-import ar.com.infrastructure.repositories.providers.memory.MemoryPostProvider
-import ar.com.infrastructure.repositories.providers.remote.RemotePostProvider
+import ar.com.infrastructure.repositories.providers.LocalPostProvider
 
 object RepositoryProvider {
     fun inject() {
-        postRepository
+        repository
     }
 
-    val postRepository by lazy { PostRepository(RemotePostProvider()) }
+    val repository by lazy { PostRepository(LocalPostProvider()) }
+
+    /**
+    val repository by lazy { CachePostRepository(LocalPostProvider(),
+        RemotePostProvider(),
+        LocalConfigurationProvider(PostApplication.INSTANCE.sharedPreferencesHelper)
+    ) }
+    */
 }
