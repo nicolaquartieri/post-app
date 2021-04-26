@@ -7,6 +7,7 @@ import ar.com.infrastructure.repositories.providers.local.db.CacheFlags
 import ar.com.infrastructure.repositories.providers.local.db.CachePolicy
 import ar.com.infrastructure.repositories.providers.remote.RemotePostProvider
 import ar.com.utils.DateFormatter
+import ar.com.infrastructure.repositories.utils.Http.httpError
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -16,12 +17,13 @@ class CachePostRepository(
     private val configurationProvider: ConfigurationProvider)
     : PostRepository(remotePostProvider) {
 
-    override suspend fun getAllPost(rowsOfPage: Int, page: Int): List<Post> {
-        return if (shouldAcquireMoreDataFor(CacheFlags.POSTS))  {
+    override suspend fun getAllPost(rowsOfPage: Int, page: Int): List<Post> = httpError {
+        val posts = if (shouldAcquireMoreDataFor(CacheFlags.POSTS))  {
             fetchAndCache(rowsOfPage, page)
         } else  {
             fetchFromCache(rowsOfPage, page)
         }
+        posts
     }
 
     private suspend fun fetchFromCache(rowsOfPage: Int, page: Int) =
