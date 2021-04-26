@@ -13,4 +13,13 @@ interface PostDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(models: List<PostEntity>)
+
+    @Insert
+    fun insert(post: PostEntity)
+
+    @Query("SELECT * FROM post WHERE :id")
+    fun getById(id: Int): PostEntity
+
+    @Query("DELETE from post")
+    fun deleteAll()
 }

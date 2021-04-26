@@ -10,9 +10,10 @@ import ar.com.utils.DateFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class CachePostRepository(val localPostProvider: LocalPostProvider,
-                          val remotePostProvider: RemotePostProvider,
-                          val configurationProvider: ConfigurationProvider)
+class CachePostRepository(
+    private val localPostProvider: LocalPostProvider,
+    private val remotePostProvider: RemotePostProvider,
+    private val configurationProvider: ConfigurationProvider)
     : PostRepository(remotePostProvider) {
 
     override suspend fun getAllPost(rowsOfPage: Int, page: Int): List<Post> {
@@ -39,7 +40,7 @@ class CachePostRepository(val localPostProvider: LocalPostProvider,
     }
 
     private suspend fun fetchAndCache(rowsOfPage: Int, page: Int): List<Post> {
-        val posts = remotePostProvider.getAllPost(rowsOfPage, page)
+        val posts = super.getAllPost(rowsOfPage, page)
         cacheAllAndRefreshTTL(posts, CacheFlags.POSTS)
         return posts
     }
