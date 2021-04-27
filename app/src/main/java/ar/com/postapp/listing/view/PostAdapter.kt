@@ -11,7 +11,8 @@ import ar.com.domain.entities.Post
 import ar.com.postapp.R
 import ar.com.postapp.listing.view.PostAdapter.PostViewHolder
 
-class PostAdapter: PagingDataAdapter<Post, PostViewHolder>(COMPARATOR) {
+class PostAdapter(private var listener: View.OnClickListener? = null)
+    : PagingDataAdapter<Post, PostViewHolder>(COMPARATOR) {
 
     companion object {
         val COMPARATOR = object : DiffUtil.ItemCallback<Post>() {
@@ -26,8 +27,9 @@ class PostAdapter: PagingDataAdapter<Post, PostViewHolder>(COMPARATOR) {
     class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val title: TextView = itemView.findViewById(R.id.title)
 
-        fun bind(item: Post?) {
+        fun bind(item: Post?, listener: View.OnClickListener?) {
             title.text = item?.title
+            itemView.setOnClickListener(listener)
         }
     }
 
@@ -40,6 +42,6 @@ class PostAdapter: PagingDataAdapter<Post, PostViewHolder>(COMPARATOR) {
 
     override fun onBindViewHolder(holder: PostViewHolder, position: Int) {
         val item = getItem(position)
-        holder.bind(item)
+        holder.bind(item, listener)
     }
 }

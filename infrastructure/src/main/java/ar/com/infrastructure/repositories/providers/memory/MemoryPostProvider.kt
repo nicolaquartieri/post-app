@@ -18,7 +18,8 @@ class MemoryPostProvider: PostProvider {
         return list.subList(page, rowsOfPage)
     }
 
-    override suspend fun insertAllPost(posts: List<Post>) {
+    override suspend fun insertAllPost(posts: List<Post>): List<Long> {
         list.addAll(posts)
+        return list.map { it.id.toLong() }
     }
 }

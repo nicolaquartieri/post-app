@@ -12,7 +12,7 @@ interface PostDAO {
     fun getAll(rowsOfPage: Int, page: Int): List<PostEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(models: List<PostEntity>)
+    fun insertAll(models: List<PostEntity>): List<Long>
 
     @Insert
     fun insert(post: PostEntity)

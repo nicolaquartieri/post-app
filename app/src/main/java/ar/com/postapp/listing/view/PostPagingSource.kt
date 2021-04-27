@@ -5,7 +5,7 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import ar.com.domain.entities.Post
 import ar.com.infrastructure.repositories.PostRepository
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.withContext
 
 class PostPagingSource(private val repository: PostRepository) : PagingSource<Int, Post>() {
@@ -20,7 +20,7 @@ class PostPagingSource(private val repository: PostRepository) : PagingSource<In
 
             var data = emptyList<Post>()
 
-            withContext(Dispatchers.IO) {
+            withContext(IO) {
                 data = repository.getAllPost(params.loadSize, page * params.loadSize)
             }
 
@@ -32,7 +32,7 @@ class PostPagingSource(private val repository: PostRepository) : PagingSource<In
                     nextKey = if (data.isEmpty()) null else page + 1
             )
         } catch (e: Exception) {
-            Log.d("DEBUGG", e.toString())
+            Log.d("DEBUG", e.toString())
             LoadResult.Error(e)
         }
     }

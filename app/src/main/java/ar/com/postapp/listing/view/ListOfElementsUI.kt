@@ -15,25 +15,62 @@ import ar.com.infrastructure.repositories.PostRepository
 import ar.com.postapp.listing.presenter.ui.UIComponents
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ListOfElementsUI(private val context: Context,
                        private val lifecycleScope: LifecycleCoroutineScope,
-                       private val repository: PostRepository
+                       private val repository: PostRepository,
+                       private val clickListener: View.OnClickListener? = null
 ) : UIComponents<View> {
 
     @InternalCoroutinesApi
     override fun createView(): View {
-        val recyclerView = RecyclerView(context)
-        recyclerView.visibility = View.VISIBLE
-        val postAdapter = PostAdapter()
-        recyclerView.apply {
+        val postAdapter = createAdapter(clickListener)
+        val recyclerView = createRecycleView(postAdapter)
+        val page = createPager()
+
+        lifecycleScope.launch {
+            postAdapter.loadStateFlow.collectLatest{loadStates ->
+                Log.d("DEBUG", "LoadState.Loading ${loadStates.refresh is LoadState.Loading}")
+                // TODO
+                //progressBar.isVisible = loadStates.refresh is LoadState.Loading
+                //retry.isVisible = loadState.refresh !is LoadState.Loading
+                //errorMsg.isVisible = loadState.refresh is LoadState.Error
+            }
+        }
+        lifecycleScope.launch {
+            page.collect {
+                postAdapter.submitData(it)
+            }
+        }
+
+        return recyclerView
+    }
+
+    private fun createPager() = Pager(
+        config = PagingConfig(
+            initialLoadSize = 5,
+            pageSize = 20
+        )
+    ) { PostPagingSource(repository) }
+        .flow.cachedIn(lifecycleScope)
+
+    private fun createRecycleView(postAdapter: PostAdapter): RecyclerView {
+        val recycle = RecyclerView(context)
+        recycle.apply {
             layoutManager = LinearLayoutManager(context)
             setHasFixedSize(true)
             adapter = postAdapter
+            visibility = View.VISIBLE
         }
 
-        postAdapter.addLoadStateListener {states ->
+        return recycle
+    }
+
+    private fun createAdapter(listener: View.OnClickListener?): PostAdapter {
+        val adapter = PostAdapter(listener)
+        adapter.addLoadStateListener {states ->
             if (states.refresh == LoadState.Loading) {
                 Toast.makeText(context, "Loading", Toast.LENGTH_SHORT).show()
                 Log.d("DEBUG", "LoadState.Loading")
@@ -46,25 +83,17 @@ class ListOfElementsUI(private val context: Context,
                 }
                 error?.let {
                     Toast.makeText(context, "Error ${it.error.message}", Toast.LENGTH_LONG).show()
+                    Log.d("DEBUG", "Error ${it.error.message}")
                 }
                 Log.d("DEBUG", "NOT LoadState.Loading")
             }
         }
-
-        val page = Pager(
-            config = PagingConfig(
-                initialLoadSize = 5,
-                pageSize = 20
-            )
-        ) { PostPagingSource(repository) }
-            .flow.cachedIn(lifecycleScope)
-
-        lifecycleScope.launch {
-            page.collect {
-                postAdapter.submitData(it)
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeChanged(positionStart: Int, itemCount: Int) {
+                super.onItemRangeChanged(positionStart, itemCount)
+                Log.d("DEBUG", "Count: $itemCount")
             }
-        }
-
-        return recyclerView
+        })
+        return adapter
     }
 }

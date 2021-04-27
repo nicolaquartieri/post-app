@@ -6,8 +6,8 @@ import ar.com.infrastructure.repositories.providers.configuration.ConfigurationP
 import ar.com.infrastructure.repositories.providers.local.db.CacheFlags
 import ar.com.infrastructure.repositories.providers.local.db.CachePolicy
 import ar.com.infrastructure.repositories.providers.remote.RemotePostProvider
-import ar.com.utils.DateFormatter
 import ar.com.infrastructure.repositories.utils.Http.httpError
+import ar.com.utils.DateFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -44,8 +44,11 @@ class CachePostRepository(
     private suspend fun fetchAndCache(rowsOfPage: Int, page: Int): List<Post> {
         val posts = super.getAllPost(rowsOfPage, page)
         cacheAllAndRefreshTTL(posts, CacheFlags.POSTS)
-        return posts
+        return acquireFromCache(rowsOfPage, page)
     }
+
+    private suspend fun acquireFromCache(rowsOfPage: Int, page: Int) =
+        localPostProvider.getAllPost(rowsOfPage, page)
 
     private suspend fun cacheAllAndRefreshTTL(posts: List<Post>, cacheFlag: CacheFlags) {
         localPostProvider.insertAllPost(posts)

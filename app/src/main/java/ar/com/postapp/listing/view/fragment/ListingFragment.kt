@@ -12,6 +12,7 @@ import ar.com.postapp.common.RepositoryProvider
 import ar.com.postapp.listing.presenter.ListingPresenter
 import ar.com.postapp.listing.presenter.ui.UIComponents
 import ar.com.postapp.listing.view.EmptyUI
+import ar.com.postapp.listing.view.FABElementUI
 import ar.com.postapp.listing.view.ListOfElementsUI
 import kotlinx.android.synthetic.main.fragment_listing.*
 
@@ -19,6 +20,10 @@ class ListingFragment: Fragment() {
     companion object { const val TAG: String = "ListingFragment" }
 
     private lateinit var presenter: ListingPresenter
+    private val listener: View.OnClickListener = View.OnClickListener {
+        Toast.makeText(activity, "Click", Toast.LENGTH_SHORT).show()
+        // TODO Do something.
+    }
 
     private val repository = RepositoryProvider.repository
 
@@ -48,7 +53,8 @@ class ListingFragment: Fragment() {
 
     private fun listUIComponents(): List<UIComponents<View>> = listOf(
         EmptyUI(requireContext()),
-        ListOfElementsUI(requireContext(), lifecycleScope, repository)
+        ListOfElementsUI(requireContext(), lifecycleScope, repository, listener),
+        FABElementUI(requireContext())
     )
 
     private fun display(components: List<UIComponents<View>>) {

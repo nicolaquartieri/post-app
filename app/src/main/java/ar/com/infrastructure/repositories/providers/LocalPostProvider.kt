@@ -10,12 +10,12 @@ class LocalPostProvider: PostProvider {
     private val dao = RoomPostAppDatabase.getInstance(PostApplication.INSTANCE).postDAO()
 
     override suspend fun getAllPost(rowsOfPage: Int, page: Int): List<Post> {
-        val entities = dao.getAll(page, rowsOfPage)
+        val entities = dao.getAll(rowsOfPage, page)
         return PostMapper.fromEntities(entities)
     }
 
-    override suspend fun insertAllPost(posts: List<Post>) {
+    override suspend fun insertAllPost(posts: List<Post>): List<Long> {
         val postsEntities: List<PostEntity> = PostMapper.toEntities(posts)
-        dao.insertAll(postsEntities)
+        return dao.insertAll(postsEntities)
     }
 }
