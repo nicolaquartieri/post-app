@@ -7,6 +7,7 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
 object Http {
+
     suspend fun <T> httpError(call: suspend () -> T): T {
         try {
             return call.invoke()
@@ -24,10 +25,9 @@ object Http {
 
 class InfrastructureException(e: Exception? = null) : Exception(e)
 
-fun infrastructureExceptionHandler(onError: () -> Unit) = CoroutineExceptionHandler { _, t ->
-    when (t) {
-        is InfrastructureException -> onError.invoke()
-        else -> throw t
+fun infrastructureExceptionHandler(onError: (e: Exception) -> Unit) = CoroutineExceptionHandler { _, exception ->
+    when (exception) {
+        is InfrastructureException -> onError.invoke(exception)
+        else -> throw exception
     }
 }
-//private val retry = infrastructureExceptionHandler { view.showRetry { loadFilters() } }
